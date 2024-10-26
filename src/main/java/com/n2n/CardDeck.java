@@ -176,6 +176,22 @@ public class CardDeck {
         "A*"
     );
 
+    private final Map<String, Integer> DECK4 = Map.ofEntries(
+    entry("2", 1),
+    entry("3", 2),
+    entry("4", 3),
+    entry("5", 4),
+    entry("6", 5),
+    entry("7", 6),
+    entry("8", 7),
+    entry("9", 8),
+    entry("10", 9),
+    entry("J", 10),
+    entry("Q", 11),
+    entry("K", 12),
+    entry("A", 13)
+    );
+
     int noOfPlayer = 0;
 
     public CardDeck() { }
@@ -201,45 +217,135 @@ public class CardDeck {
             deckPointer.remove(randomPointer);
         }
 
-        System.out.println("Deck shuffled result: " + shuffledDeck.toString());
+        System.out.println("Deck shuffled result: " + shuffledDeck.keySet());
         System.out.println("shuffledDeck size: " + shuffledDeck.size());
 
         return shuffledDeck;
     }
 
-    public Map<Integer, List<String>> deal(Map<String, Integer> cards) {
-        System.out.println("deal cards: " + cards);
+    public Map<Integer, List<Integer>> deal(Map<String, Integer> cards) {
+        System.out.println("deal cards: " + cards.keySet());
         int currentPlayer = 0;
-        Map<Integer, List<String>> results = new HashMap<Integer, List<String>>();
+        Map<Integer, List<String>> results = new HashMap<>();
+        Map<Integer, List<Integer>> results2 = new HashMap<>();
         Map<String, String> result = new HashMap<String, String>();
+        Map<Integer, String> result2 = new HashMap<>();
+        Map<Integer, Map<String, Integer>> result3 = new HashMap<>();
 
         for (Map.Entry<String, Integer> card: cards.entrySet()) {
+            // System.out.println("card " + card.getKey());
             result.put(card.getKey(), String.valueOf(currentPlayer));
+            result2.put(card.getValue(), String.valueOf(currentPlayer));
             currentPlayer++;
+
             // reset to the first player
             if (currentPlayer == noOfPlayer) {
                 currentPlayer = 0;
             }
-
         }
+
+        System.out.println("result size: " + result.size());
+        System.out.println("deal result: " + result.keySet());
+        System.out.println("dead result2: " + result2);
 
         for (int player = 0;player < noOfPlayer;player++) {
             List<String> playerCards = new ArrayList<String>();
+            List<Integer> playerCardsNumber = new ArrayList<>();
             for (Map.Entry<String, String> entry: result.entrySet()) {
                 if (entry.getValue().equals(String.valueOf(player))) {
                     playerCards.add(entry.getKey());
+                    playerCardsNumber.add(DECK.get(entry.getKey()));
                 }
             }
 
+            // System.out.println("Player " + (player + 1) + " cards before sort: " + playerCards);
             results.put(player + 1, playerCards);
+            playerCardsNumber.sort(null);
+            results2.put(player + 1, playerCardsNumber);
+            System.out.print("Player " + (player + 1) +" card after sort => [");
+            playerCardsNumber.stream().forEach((c) ->
+                System.out.print(DECK2.get(c) + ", ")
+            );
+            System.out.print("]\n");
         }
-        System.out.println("result size: " + result.size());
-        System.out.println("deal result: " + result);
 
-        for(Map.Entry<Integer, List<String>> player: results.entrySet()) {
-            System.out.println("Player " + player.getKey() + " with cards => " + player.getValue());
+        // for(Map.Entry<Integer, List<Integer>> player: results2.entrySet()) {
+        //     System.out.println("Player " + player.getKey() + " with cards => " + player.getValue());
+        // }
+
+        return results2;
+    }
+
+    public void determineWinner(Map<Integer, List<Integer>> playerCards) {
+        Map<Integer, List<String>> results = new HashMap<>();
+        Map<Integer, List<Integer>> results2 = new HashMap<>();
+
+        for(Map.Entry<Integer, List<Integer>> playerCard: playerCards.entrySet()) {
+            List<Integer> cards = playerCard.getValue();
+            int noOfSameCards = 1;
+            int highestNoOfSameCards = 1;
+            int tmpHighestNoOfSameCards = 1;
+
+            boolean isSameCard;
+
+            // make the currentCard as last card
+            String currentCard = DECK2.get(cards.get(cards.size() - 1));
+            String pointerCard;
+
+            List<String> sameCards = new ArrayList<>();
+            List<String> tmpSameCards = new ArrayList<>();
+            List<Integer> sameCardsValue = new ArrayList<>();
+            List<Integer> tmpSameCardsValue = new ArrayList<>();
+            for(int i = cards.size() - 2; i >=0; i--) {
+                isSameCard = false;
+                pointerCard = DECK2.get(cards.get(i));
+
+                if (pointerCard.charAt(0) == currentCard.charAt(0)) {
+                    noOfSameCards++;
+                    isSameCard = true;
+                    highestNoOfSameCards = noOfSameCards;
+                }
+
+                if (isSameCard) {
+                    if (noOfSameCards - 1 == 1) {
+                        sameCards.add(currentCard);
+                    }
+
+                    sameCards.add(pointerCard);
+
+                }
+
+
+                if ((noOfSameCards > 1) && !isSameCard) {
+                    if (tmpHighestNoOfSameCards < highestNoOfSameCards) {
+                        tmpHighestNoOfSameCards = highestNoOfSameCards;
+                        tmpSameCards = new ArrayList<>(sameCards);
+                        sameCards.clear();
+                    }
+
+                    noOfSameCards = 1;
+                }
+
+                currentCard = DECK2.get(cards.get(i));
+            }
+
+            tmpSameCards.forEach((c) ->
+                sameCardsValue.add(DECK.get(c))
+            );
+            System.out.println("Player " + (playerCard.getKey()) + " winning cards: " + tmpSameCards + " values: " + sameCardsValue + " with highest no of same card = " + tmpHighestNoOfSameCards);
+            results2.put(playerCard.getKey(), sameCardsValue);
+            results.put(playerCard.getKey(), tmpSameCards);
+
+            // Reset
+            noOfSameCards = 1;
+            highestNoOfSameCards = 1;
+            tmpHighestNoOfSameCards = 1;
         }
 
-        return results;
+        System.out.println("results: " + results);
+        System.out.println("results2: " + results2);
+    }
+    public void sort() {
+
     }
 }
