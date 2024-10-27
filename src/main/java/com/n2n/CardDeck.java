@@ -271,7 +271,7 @@ public class CardDeck {
             List<String> sameCards = new ArrayList<>();
             List<String> tmpSameCards = new ArrayList<>();
             List<Integer> sameCardsValue = new ArrayList<>();
-            
+
             // Loop start from the second element from the back
             for(int i = cards.size() - 2; i >=0; i--) {
                 isSameCard = false;
@@ -291,7 +291,7 @@ public class CardDeck {
                     sameCards.add(pointerCard);
                 }
 
-                if ((noOfSameCards > 1) && !isSameCard) {
+                if ((noOfSameCards > 1) && (!isSameCard || i == 0)) {
                     if (tmpHighestNoOfSameCards < highestNoOfSameCards) {
                         tmpHighestNoOfSameCards = highestNoOfSameCards;
                         tmpSameCards = new ArrayList<>(sameCards);
@@ -339,16 +339,8 @@ public class CardDeck {
                 cardValues =+ DECK.get(card);
             }
 
-            if (tmpCardSize == cardSize) {
-                if (tmpCardValues < cardValues) {
-                    winners = playerCard.getKey();
 
-                    winnerCards.clear();
-                    winnerCards.addAll(playerCard.getValue());
-                }
-            }
-
-            if (tmpCardSize < cardSize) {
+            if (tmpCardSize < cardSize || (tmpCardSize == cardSize && tmpCardValues < cardValues)) {
                 tmpCardSize = cardSize;
 
                 for (String card: playerCard.getValue()) {
@@ -363,5 +355,22 @@ public class CardDeck {
         }
 
         System.out.println("The true winner is player " + winners + " with cards " + winnerCards);
+    }
+
+    public Map<Integer, List<Integer>> converSymbolToValue(Map<Integer, List<String>> playerCards) {
+        Map<Integer, List<Integer>> result = new HashMap<>();
+
+        for (Map.Entry<Integer, List<String>> playerCard: playerCards.entrySet()) {
+            List<Integer> cardsValue = new ArrayList<>();
+
+            for (String card: playerCard.getValue()) {
+                cardsValue.add(DECK.get(card));
+            }
+
+            result.put(playerCard.getKey(), cardsValue);
+            System.out.println("Player " + playerCard.getKey() + " cards are: " + cardsValue);
+        }
+
+        return result;
     }
 }
