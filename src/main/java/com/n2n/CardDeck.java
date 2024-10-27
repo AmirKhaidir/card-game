@@ -176,22 +176,6 @@ public class CardDeck {
         "A*"
     );
 
-    private final Map<String, Integer> DECK4 = Map.ofEntries(
-    entry("2", 1),
-    entry("3", 2),
-    entry("4", 3),
-    entry("5", 4),
-    entry("6", 5),
-    entry("7", 6),
-    entry("8", 7),
-    entry("9", 8),
-    entry("10", 9),
-    entry("J", 10),
-    entry("Q", 11),
-    entry("K", 12),
-    entry("A", 13)
-    );
-
     int noOfPlayer = 0;
 
     public CardDeck() { }
@@ -224,15 +208,14 @@ public class CardDeck {
 
     public Map<Integer, List<Integer>> deal(Map<String, Integer> cards) {
         System.out.println("deal cards: " + cards.keySet());
+
         int currentPlayer = 0;
         Map<Integer, List<String>> results = new HashMap<>();
         Map<Integer, List<Integer>> results2 = new HashMap<>();
         Map<String, String> result = new HashMap<String, String>();
         Map<Integer, String> result2 = new HashMap<>();
-        Map<Integer, Map<String, Integer>> result3 = new HashMap<>();
 
         for (Map.Entry<String, Integer> card: cards.entrySet()) {
-            // System.out.println("card " + card.getKey());
             result.put(card.getKey(), String.valueOf(currentPlayer));
             result2.put(card.getValue(), String.valueOf(currentPlayer));
             currentPlayer++;
@@ -253,10 +236,11 @@ public class CardDeck {
                 }
             }
 
-            // System.out.println("Player " + (player + 1) + " cards before sort: " + playerCards);
             results.put(player + 1, playerCards);
             playerCardsNumber.sort(null);
             results2.put(player + 1, playerCardsNumber);
+
+            // Print Result
             System.out.print("Player " + (player + 1) +" card after sort => [");
             playerCardsNumber.stream().forEach((c) ->
                 System.out.print(DECK2.get(c) + ", ")
@@ -287,7 +271,8 @@ public class CardDeck {
             List<String> sameCards = new ArrayList<>();
             List<String> tmpSameCards = new ArrayList<>();
             List<Integer> sameCardsValue = new ArrayList<>();
-
+            
+            // Loop start from the second element from the back
             for(int i = cards.size() - 2; i >=0; i--) {
                 isSameCard = false;
                 pointerCard = DECK2.get(cards.get(i));
@@ -332,8 +317,6 @@ public class CardDeck {
             highestNoOfSameCards = 1;
             tmpHighestNoOfSameCards = 1;
         }
-
-        System.out.println("results: " + results);
 
         return results;
     }
