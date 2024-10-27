@@ -9,6 +9,7 @@ public class Main {
 
         Map<String, Integer> shuffledDeck = deck.shuffle();
         Map<Integer, List<Integer>> dealedCards = deck.deal(shuffledDeck);
-        deck.determineWinner(dealedCards);
+        Map<Integer, List<String>> playerCards = deck.arrange(dealedCards);
+        deck.winner(playerCards);
     }
 }

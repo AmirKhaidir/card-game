@@ -218,7 +218,6 @@ public class CardDeck {
         }
 
         System.out.println("Deck shuffled result: " + shuffledDeck.keySet());
-        System.out.println("shuffledDeck size: " + shuffledDeck.size());
 
         return shuffledDeck;
     }
@@ -244,10 +243,6 @@ public class CardDeck {
             }
         }
 
-        System.out.println("result size: " + result.size());
-        System.out.println("deal result: " + result.keySet());
-        System.out.println("dead result2: " + result2);
-
         for (int player = 0;player < noOfPlayer;player++) {
             List<String> playerCards = new ArrayList<String>();
             List<Integer> playerCardsNumber = new ArrayList<>();
@@ -269,17 +264,14 @@ public class CardDeck {
             System.out.print("]\n");
         }
 
-        // for(Map.Entry<Integer, List<Integer>> player: results2.entrySet()) {
-        //     System.out.println("Player " + player.getKey() + " with cards => " + player.getValue());
-        // }
-
         return results2;
     }
 
-    public void determineWinner(Map<Integer, List<Integer>> playerCards) {
+    public Map<Integer, List<String>> arrange(Map<Integer, List<Integer>> playerCards) {
         Map<Integer, List<String>> results = new HashMap<>();
         Map<Integer, List<Integer>> results2 = new HashMap<>();
 
+        // Loop through each player and their cards
         for(Map.Entry<Integer, List<Integer>> playerCard: playerCards.entrySet()) {
             List<Integer> cards = playerCard.getValue();
             int noOfSameCards = 1;
@@ -295,7 +287,7 @@ public class CardDeck {
             List<String> sameCards = new ArrayList<>();
             List<String> tmpSameCards = new ArrayList<>();
             List<Integer> sameCardsValue = new ArrayList<>();
-            List<Integer> tmpSameCardsValue = new ArrayList<>();
+
             for(int i = cards.size() - 2; i >=0; i--) {
                 isSameCard = false;
                 pointerCard = DECK2.get(cards.get(i));
@@ -307,22 +299,20 @@ public class CardDeck {
                 }
 
                 if (isSameCard) {
-                    if (noOfSameCards - 1 == 1) {
+                    if ((noOfSameCards - 1) == 1) {
                         sameCards.add(currentCard);
                     }
 
                     sameCards.add(pointerCard);
-
                 }
-
 
                 if ((noOfSameCards > 1) && !isSameCard) {
                     if (tmpHighestNoOfSameCards < highestNoOfSameCards) {
                         tmpHighestNoOfSameCards = highestNoOfSameCards;
                         tmpSameCards = new ArrayList<>(sameCards);
-                        sameCards.clear();
                     }
 
+                    sameCards.clear();
                     noOfSameCards = 1;
                 }
 
@@ -332,6 +322,7 @@ public class CardDeck {
             tmpSameCards.forEach((c) ->
                 sameCardsValue.add(DECK.get(c))
             );
+
             System.out.println("Player " + (playerCard.getKey()) + " winning cards: " + tmpSameCards + " values: " + sameCardsValue + " with highest no of same card = " + tmpHighestNoOfSameCards);
             results2.put(playerCard.getKey(), sameCardsValue);
             results.put(playerCard.getKey(), tmpSameCards);
@@ -343,9 +334,51 @@ public class CardDeck {
         }
 
         System.out.println("results: " + results);
-        System.out.println("results2: " + results2);
+
+        return results;
     }
+
     public void sort() {
 
+    }
+
+    public void winner(Map<Integer, List<String>> playerCards) {
+        int tmpCardSize = 0;
+        int tmpCardValues = 0;
+        Integer winners = null;
+        List<String> winnerCards =  new ArrayList<>();
+
+        for(Map.Entry<Integer, List<String>> playerCard: playerCards.entrySet()) {
+            int cardSize = playerCard.getValue().size();
+            int cardValues = 0;
+
+            for (String card: playerCard.getValue()) {
+                cardValues =+ DECK.get(card);
+            }
+
+            if (tmpCardSize == cardSize) {
+                if (tmpCardValues < cardValues) {
+                    winners = playerCard.getKey();
+
+                    winnerCards.clear();
+                    winnerCards.addAll(playerCard.getValue());
+                }
+            }
+
+            if (tmpCardSize < cardSize) {
+                tmpCardSize = cardSize;
+
+                for (String card: playerCard.getValue()) {
+                    tmpCardValues =+ DECK.get(card);
+                }
+
+                winners = playerCard.getKey();
+
+                winnerCards.clear();
+                winnerCards.addAll(playerCard.getValue());
+            }
+        }
+
+        System.out.println("The true winner is player " + winners + " with cards " + winnerCards);
     }
 }
